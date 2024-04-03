@@ -12,32 +12,31 @@ num_questions = len(satisfaction_survey.questions)
 
 @app.route('/')
 def show_form(): 
+    """Home page to begin survery"""
     return render_template('survey.html', survey=satisfaction_survey)
 
 @app.route('/questions/<int:qID>')
 def display_question(qID):
-    if (qID != len(responses)):
+    """Displays question for user"""
+    if (qID != len(responses)): # true if user edited url for invalid question
         flash("Invalid. Cannot access the requested question.")
         return redirect(f'/questions/{len(responses)}')
-    elif (len(responses) >= num_questions):
+    elif (len(responses) >= num_questions): # true if the user is done and changes url to show a question
         return redirect('/done')
-    else:
+    else: # display next question for user
         return render_template('question.html', qID=qID, survey=satisfaction_survey, qty=num_questions)
 
 @app.route('/questions/answer', methods=['POST'])
 def add_answer():
+    """post method that saves survey answer and moves to next question"""
     ans = list(request.form.keys())[0]
     responses.append(ans)
-    if (len(responses) >= num_questions):
+    if (len(responses) >= num_questions): # Shows final page if no more questions
         return redirect('/done')
-    else:
+    else: # moves to next question
         return redirect(f'/questions/{len(responses)}')
     
 @app.route('/done')
 def display_done():
+    """Page to show user that the survery is done"""
     return '<h1>Survey completed, thank you!</h1>'
- 
-@app.route('/oldpage')
-def redirect_to():
-    flash('Message for user!', 'error')
-    return redirect('/pathway')
